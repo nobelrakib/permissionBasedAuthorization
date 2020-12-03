@@ -1,0 +1,10 @@
+﻿@model DynamicPermissionBasedAuthorization.Models.NotificationModel
+
+@if (Model != null)
+{
+    <div class="alert alert-@Model.TypeCssClass alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <h5><i class="icon fas fa-@Model.SignCssClass"></i> @Model.HeaderText</h5>
+        @Model.Message
+    </div>
+}

@@ -1,0 +1,177 @@
+﻿@model DynamicPermissionBasedAuthorization.Models.UserUpdateModel
+
+@{
+    ViewData["Title"] = "Add User";
+}
+
+@section notification
+{
+    @await Html.PartialAsync("_Notification", Model.Notification)
+}
+
+@section scripts{
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
+         function isValidPhone(PhoneNumber) {
+            var found = PhoneNumber.search(/^(\+{1}\d{2,3}\s?[(]{1}\d{1,3}[)]{1}\s?\d+|\+\d{2,3}\s{1}\d+|\d+){1}[\s|-]?\d+([\s|-]?\d+){1,2}$/);
+            var l = PhoneNumber.length;
+            var a = parseInt(l);
+            if (found > -1) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        function myFunction() {
+            var inputEmail = $("#Email").val();
+            var mailCheck = validateEmail(inputEmail);
+            if (!mailCheck) {
+                $("#EmailText").text("please enter a valid email!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            function validateEmail(inputEmail) {
+                var re = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+                return re.test(String(inputEmail).toLowerCase());
+            }
+            var inputPhoneNumber = $("#PhoneNumber").val();
+            var phoneCheck = isValidPhone(inputPhoneNumber);
+            if (!phoneCheck) {
+                $("#phoneNumberText").text("please enter valid  phone number!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#Password").val() === "") {
+                $("#passwordText").text("please give password!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            
+            if ($("#user").val() === "") {
+                $("#UserText").text("please give user name!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#confirmPassword").val() === "") {
+                $("#confirmPasswordText").text("please give confirm password!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#RoleId").val() === "") {
+                $("#RoleText").text("please provide role!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            
+        }
+    </script>
+    <script>
+        $("#RoleId").change(function () {
+            $("#RoleText").hide();
+        });
+
+        $("#Email").keypress(function (e) {
+            $("#EmailText").hide();
+        });
+        $("#PhoneNumber").keypress(function (e) {
+            $("#phoneNumberText").hide();
+        });
+        $("#confirmPassword").keypress(function (e) {
+            $("#confirmPasswordText").hide();
+        });
+        $("#Password").keypress(function (e) {
+            $("#passwordText").hide();
+        });
+
+
+            $(".checkBox").is(':checked', function(){
+                $(".checkBox").attr('value', 'true');
+            });
+
+
+    </script>
+}
+
+<div class="row">
+    <!-- left column -->
+    <div class="col-md-6">
+        <!-- general form elements -->
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Add a new User</h3>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <form role="form" action="~/user/add" method="post">
+                @Html.AntiForgeryToken()
+
+                @if (ViewBag.Message == "Success")
+                {
+
+                }
+                else
+                {
+                    <span class="text-danger text-center">@ViewBag.Message</span>
+                }
+
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="email">Username</label>
+                    <p class="text-danger" id="UserText"></p>
+                    <input type="text" class="form-control" name="UserName" id="user" placeholder="enter user name">
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <p class="text-danger" id="EmailText"></p>
+                    <input type="text" class="form-control" name="Email" id="Email" placeholder="enter email address">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <p class="text-danger" id="passwordText"></p>
+                    <input type="password" class="form-control" name="Password" id="Password" placeholder="enter password">
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <p class="text-danger" id="RoleText"></p>
+                    @Html.DropDownListFor(model => model.Role, Model.Roles, "Pick Role", new { @class = "form-control", @id = "RoleId" })
+                </div>
+                @foreach (var permission in Model.PermissionContainer)
+                {
+                    
+                    <div>
+                        <input type="checkbox" value="@permission.Value.ToString().ToLower()" name="@("PermissionContainer[" + permission.Key + "]")" class="pb-lg-4  checkBox" style="margin:10px;"  /> <span>@permission.Key</span>
+                    </div>
+                }
+                @*<div>
+            <input type="checkbox" class="pb-lg-4" style="margin:10px;" /> <span>Permissions.AuthTest.View</span>
+        </div>
+        <div> <input type="checkbox" class="pb-lg-4" style="margin:10px;" /> <span>Permissions.AuthTest.Create</span></div>
+        <div><input type="checkbox" class="pb-lg-4" style="margin:10px;" /><span>Permissions.AuthTest.Edit</span></div>
+        <div><input type="checkbox" class="pb-lg-4" style="margin:10px;" /><span>Permissions.AuthTest.Delete</span></div>*@
+
+            </div>
+
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary" >Submit</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.card -->
+
+    </div>
+    @*<div class="col-md-6">
+        <div>
+            <input type="checkbox" class="pb-lg-4" style="margin:10px;" /> <span>Permissions.AuthTest.View</span>
+        </div>
+        <div> <input type="checkbox" class="pb-lg-4" style="margin:10px;" /> <span>Permissions.AuthTest.Create</span></div>
+        <div><input type="checkbox" class="pb-lg-4" style="margin:10px;" /><span>Permissions.AuthTest.Edit</span></div>
+        <div><input type="checkbox" class="pb-lg-4" style="margin:10px;" /><span>Permissions.AuthTest.Delete</span></div>
+        
+    </div>*@
+    <!--/.col (left) -->
+</div>
+
